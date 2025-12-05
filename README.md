@@ -1,4 +1,4 @@
-# BMKG Wilayah, Prakiraan, & Peringatan Dini (CLI + Library)
+# BMKG API (Wilayah, Prakiraan, Peringatan Dini, Gempabumi) – `bmkg-api`
 
 CLI dan utilitas JS/TS untuk:
 - Cari kode wilayah administrasi (adm1–adm4).
@@ -10,10 +10,14 @@ Dibuat ringan untuk backend, CLI, atau dijembatani ke frontend.
 ## Instalasi
 
 ```bash
-bun install
-# atau npm install / pnpm install
+npm install bmkg-api
+# atau
+pnpm add bmkg-api
+# atau
+bun add bmkg-api
 
-# build (bundled ke dist + copy base.csv)
+# jika dari sumber / pengembangan:
+bun install
 bun run build
 ```
 
@@ -43,10 +47,17 @@ bmkg alert <kode_cap> [id|en]
 
 # cepat: feed + detail pertama
 bmkg alerts-latest [id|en]
+
+# gempabumi: terbaru, M5+, dirasakan
+bmkg gempa            # terbaru (autogempa)
+bmkg gempa latest     # sama seperti di atas
+bmkg gempa strong     # daftar 15 M5+ (gempaterkini)
+bmkg gempa felt       # daftar 15 gempa dirasakan (gempadirasakan)
 ```
 
 Output fetch menampilkan 10 slot waktu terdekat (3 harian, per 3 jam). Sumber data: BMKG (api.bmkg.go.id). Batas akses API: 60 permintaan/menit/IP.
 RSS/CAP nowcast: bmkg.go.id/alerts/nowcast (CAP, valid CAP Validator).
+Gempabumi: data.bmkg.go.id/DataMKG/TEWS (autogempa, gempaterkini, gempadirasakan, shakemap).
 
 ### Detail Peringatan Dini (CAP)
 
@@ -68,12 +79,16 @@ import {
   fetchAlertFeed,
   fetchAlertDetail,
   extractCodeFromLink,
+  fetchLatestQuake,
+  fetchStrongQuakes,
+  fetchFeltQuakes,
   BASE_CSV_PATH,
   type Region,
   type ForecastEntry,
   type AlertFeedItem,
   type AlertDetail,
-} from "@hades/bmkg-cli";
+  type QuakeEntry,
+} from "bmkg-api";
 
 const regions: Region[] = loadRegions(); // default pakai base.csv terbundle
 const matches = searchRegions(regions, "Malang", 10);
@@ -101,7 +116,12 @@ Fungsi utama:
 - `fetchAlertFeed(lang)` mengambil RSS peringatan dini (id/en).
 - `fetchAlertDetail(code, lang)` mengambil CAP detail per kode.
 - `extractCodeFromLink(link)` mengekstrak kode CAP dari link RSS.
+- `fetchLatestQuake()` gempabumi terbaru (autogempa).
+- `fetchStrongQuakes(limit?)` daftar M5+ (gempaterkini).
+- `fetchFeltQuakes(limit?)` daftar gempa dirasakan (gempadirasakan).
+- `printQuake`, `printQuakeList` untuk output terminal.
 - `BASE_CSV_PATH` menunjuk file CSV terbundle (berguna saat dijalankan dari luar repo).
+- `BASE_JSON_PATH` menunjuk file JSON terbundle (lebih cepat dibaca jika tersedia).
 
 ## Integrasi Frontend
 
@@ -122,3 +142,4 @@ Fungsi utama:
 - Hormati batas laju 60 permintaan per menit per IP.
 - Data wilayah berasal dari `base.csv` (kode wilayah administrasi tingkat IV, Kemendagri 100.1.1-6117/2022).
 - Peringatan dini (nowcast) menggunakan RSS + CAP dari bmkg.go.id/alerts/nowcast; valid CAP.
+- Data gempabumi dari data.bmkg.go.id/DataMKG/TEWS (autogempa, gempaterkini, gempadirasakan, shakemap).

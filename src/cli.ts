@@ -10,6 +10,13 @@ import {
     printAlertFeed,
     extractCodeFromLink,
 } from "./alerts";
+import {
+    fetchLatestQuake,
+    fetchStrongQuakes,
+    fetchFeltQuakes,
+    printQuake,
+    printQuakeList,
+} from "./quake";
 
 const DEFAULT_QUERY = "malang";
 
@@ -82,6 +89,33 @@ async function main() {
         }
         console.log("Sumber data: BMKG (bmkg.go.id/alerts/nowcast)");
         return;
+    }
+
+    if (cmd === "gempa" || cmd === "quake") {
+        const sub = args[1] ?? "latest";
+        if (sub === "latest") {
+            console.log("Memuat gempabumi terbaru (autogempa)...");
+            const data = await fetchLatestQuake();
+            printQuake(data);
+            console.log("Sumber data: BMKG (data.bmkg.go.id/DataMKG/TEWS)");
+            return;
+        }
+        if (sub === "strong") {
+            console.log("Daftar 15 gempabumi M5+ (gempaterkini)...");
+            const list = await fetchStrongQuakes();
+            printQuakeList(list, "Gempabumi M5+");
+            console.log("Sumber data: BMKG (data.bmkg.go.id/DataMKG/TEWS)");
+            return;
+        }
+        if (sub === "felt") {
+            console.log("Daftar 15 gempabumi dirasakan (MMI)...");
+            const list = await fetchFeltQuakes();
+            printQuakeList(list, "Gempabumi Dirasakan");
+            console.log("Sumber data: BMKG (data.bmkg.go.id/DataMKG/TEWS)");
+            return;
+        }
+        console.error("Gunakan: bmkg gempa [latest|strong|felt]");
+        process.exit(1);
     }
 
     if (cmd === "malang") {

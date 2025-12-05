@@ -1,7 +1,7 @@
 {
-    "name": "@hades/bmkg-cli",
-    "version": "0.1.0",
-    "description": "CLI & library sederhana untuk pencarian wilayah BMKG dan prakiraan cuaca per adm4.",
+    "name": "bmkg-api",
+    "version": "0.1.1",
+    "description": "CLI & library BMKG: wilayah adm4, prakiraan cuaca, peringatan dini CAP, dan data gempabumi.",
     "type": "module",
     "license": "UNLICENSED",
     "sideEffects": false,
@@ -27,11 +27,13 @@
     },
     "files": [
         "dist",
-        "base.csv"
+        "base.csv",
+        "base.json"
     ],
     "scripts": {
         "dev": "bun run src/cli.ts",
-        "build": "bun build src/index.ts --target node --outdir dist --format esm --sourcemap=inline && bun build src/cli.ts --target node --outdir dist --format esm --sourcemap=inline && node -e \"require('fs').copyFileSync('base.csv','dist/base.csv')\"",
+        "build:data": "node scripts/build-data.js",
+        "build": "bun run build:data && bun build src/index.ts --target node --outdir dist --format esm --sourcemap=inline && bun build src/cli.ts --target node --outdir dist --format esm --sourcemap=inline && node -e \"require('fs').copyFileSync('base.csv','dist/base.csv')\" && node -e \"require('fs').copyFileSync('base.json','dist/base.json')\"",
         "start": "node dist/cli.js",
         "prepublishOnly": "bun run build"
     },

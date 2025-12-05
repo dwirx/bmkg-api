@@ -59,3 +59,18 @@ export type AlertDetail = {
         }[];
     };
 };
+
+export type QuakeEntry = {
+    source?: "latest" | "m5" | "felt";
+    tanggal?: string;
+    jam?: string;
+    datetime?: string;
+    magnitude?: number;
+    kedalaman_km?: number;
+    lat?: number;
+    lon?: number;
+    wilayah?: string;
+    potensi?: string;
+    dirasakan?: string;
+    shakemap?: string;
+};

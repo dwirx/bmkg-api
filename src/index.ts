@@ -8,6 +8,13 @@ export {
     printAlertDetail,
     extractCodeFromLink,
 } from "./alerts";
+export {
+    fetchLatestQuake,
+    fetchStrongQuakes,
+    fetchFeltQuakes,
+    printQuake,
+    printQuakeList,
+} from "./quake";
 export type {
     Region,
     Level,
@@ -15,4 +22,5 @@ export type {
     ForecastResponse,
     AlertFeedItem,
     AlertDetail,
+    QuakeEntry,
 } from "./types";
