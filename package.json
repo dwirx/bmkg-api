@@ -1,0 +1,44 @@
+{
+    "name": "@hades/bmkg-cli",
+    "version": "0.1.0",
+    "description": "CLI & library sederhana untuk pencarian wilayah BMKG dan prakiraan cuaca per adm4.",
+    "type": "module",
+    "license": "UNLICENSED",
+    "sideEffects": false,
+    "keywords": [
+        "bmkg",
+        "cuaca",
+        "prakiraan",
+        "wilayah",
+        "adm4",
+        "indonesia"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "bin": {
+        "bmkg": "./dist/cli.js"
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "exports": {
+        ".": "./dist/index.js",
+        "./cli": "./dist/cli.js"
+    },
+    "files": [
+        "dist",
+        "base.csv"
+    ],
+    "scripts": {
+        "dev": "bun run src/cli.ts",
+        "build": "bun build src/index.ts --target node --outdir dist --format esm --sourcemap=inline && bun build src/cli.ts --target node --outdir dist --format esm --sourcemap=inline && node -e \"require('fs').copyFileSync('base.csv','dist/base.csv')\"",
+        "start": "node dist/cli.js",
+        "prepublishOnly": "bun run build"
+    },
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    }
+}
