@@ -1,5 +1,5 @@
 {
-    "name": "xbmkg",
+    "name": "bmkg-api",
     "version": "0.1.1",
     "description": "CLI & library BMKG: wilayah adm4, prakiraan cuaca, peringatan dini CAP, dan data gempabumi.",
     "type": "module",

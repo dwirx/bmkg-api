@@ -1,4 +1,4 @@
-# BMKG API (Wilayah, Prakiraan, Peringatan Dini, Gempabumi) – `xbmkg`
+# BMKG API (Wilayah, Prakiraan, Peringatan Dini, Gempabumi) – `bmkg-api`
 
 CLI dan utilitas JS/TS untuk:
 - Cari kode wilayah administrasi (adm1–adm4).
@@ -10,11 +10,11 @@ Dibuat ringan untuk backend, CLI, atau dijembatani ke frontend.
 ## Instalasi
 
 ```bash
-npm install xbmkg
+npm install bmkg-api
 # atau
-pnpm add xbmkg
+pnpm add bmkg-api
 # atau
-bun add xbmkg
+bun add bmkg-api
 
 # jika dari sumber / pengembangan:
 bun install
@@ -88,7 +88,7 @@ import {
   type AlertFeedItem,
   type AlertDetail,
   type QuakeEntry,
-} from "xbmkg";
+} from "bmkg-api";
 
 const regions: Region[] = loadRegions(); // default pakai base.csv terbundle
 const matches = searchRegions(regions, "Malang", 10);

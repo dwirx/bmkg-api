@@ -73,6 +73,6 @@ jobs:
                   draft: false
                   prerelease: false
                   body: |
-                      Automated release for xbmkg v${{ env.PKG_VERSION }}.
-                      - npm publish via workflow
-                      - includes base.csv/base.json assets in package
+            Automated release for bmkg-api v${{ env.PKG_VERSION }}.
+            - npm publish via workflow
+            - includes base.csv/base.json assets in package
