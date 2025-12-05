@@ -22,19 +22,20 @@ jobs:
               with:
                   bun-version: latest
 
-            - name: Install dependencies (with retries)
-              run: |
-                  npm config set fetch-retries 5
-                  npm config set fetch-retry-factor 2
-                  npm config set fetch-retry-mintimeout 1000
-                  npm config set fetch-retry-maxtimeout 60000
-                  for i in 1 2 3; do
-                    bun install && exit 0
-                    echo "Retry $i..." >&2
-                    sleep $((i*5))
-                  done
-                  echo "Install failed after retries" >&2
-                  exit 1
+      - name: Install dependencies (npm with retries)
+        run: |
+          npm config set fetch-retries 6
+          npm config set fetch-retry-factor 2
+          npm config set fetch-retry-mintimeout 1000
+          npm config set fetch-retry-maxtimeout 60000
+          npm config set registry https://registry.npmjs.org/
+          for i in 1 2 3 4 5; do
+            npm install && exit 0
+            echo "Retry $i..." >&2
+            sleep $((i*10))
+          done
+          echo "Install failed after retries" >&2
+          exit 1
 
             - name: Build package (includes base.json/base.csv copy)
               run: bun run build
