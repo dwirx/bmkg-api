@@ -1,6 +1,11 @@
-# BMKG Wilayah & Prakiraan (CLI + Library)
+# BMKG Wilayah, Prakiraan, & Peringatan Dini (CLI + Library)
 
-CLI dan utilitas JS/TS untuk mencari kode wilayah administrasi (adm4) dan mengambil prakiraan cuaca BMKG. Dibuat ringan untuk dipakai di backend, CLI, atau dijembatani ke frontend.
+CLI dan utilitas JS/TS untuk:
+- Cari kode wilayah administrasi (adm1–adm4).
+- Ambil prakiraan cuaca (3 hari, per 3 jam) per adm4.
+- Ambil peringatan dini cuaca (nowcast) CAP BMKG (RSS + detail CAP).
+
+Dibuat ringan untuk backend, CLI, atau dijembatani ke frontend.
 
 ## Instalasi
 
@@ -27,9 +32,29 @@ bmkg search "Banyuwangi" --limit=20
 
 # ambil prakiraan cuaca (adm4)
 bmkg fetch 35.07.01.2001
+
+# daftar RSS peringatan dini (id/en)
+bmkg alerts         # default id
+bmkg alerts en
+
+# detail CAP per kode (id/en)
+bmkg alert <kode_cap> [id|en]
+# contoh: bmkg alert 6oyh5RjJk5sqpZGQyM5ULqVXFfkqCk id
+
+# cepat: feed + detail pertama
+bmkg alerts-latest [id|en]
 ```
 
 Output fetch menampilkan 10 slot waktu terdekat (3 harian, per 3 jam). Sumber data: BMKG (api.bmkg.go.id). Batas akses API: 60 permintaan/menit/IP.
+RSS/CAP nowcast: bmkg.go.id/alerts/nowcast (CAP, valid CAP Validator).
+
+### Detail Peringatan Dini (CAP)
+
+- Feed RSS: `bmkg alerts [id|en]` menampilkan daftar provinsi/kode CAP aktif.
+- Kode CAP bisa diambil dari link feed (mis. `.../CJI20251205003_alert.xml` → `CJI20251205003`).
+- Detail CAP: `bmkg alert <kode> [id|en]` menampilkan headline, event, urgency, severity, certainty, waktu effective/expire, deskripsi, web, dan daftar area terdampak (dibatasi 10 pertama untuk ringkas).
+- `bmkg alerts-latest` menampilkan ringkasan feed (5 teratas) dan otomatis memuat detail CAP pertama.
+- Standar CAP, format XML, sumber: BMKG (bmkg.go.id/alerts/nowcast). Batas: 60 permintaan/menit/IP.
 
 ## API Library
 
@@ -40,9 +65,14 @@ import {
   loadRegions,
   searchRegions,
   fetchForecast,
+  fetchAlertFeed,
+  fetchAlertDetail,
+  extractCodeFromLink,
   BASE_CSV_PATH,
   type Region,
   type ForecastEntry,
+  type AlertFeedItem,
+  type AlertDetail,
 } from "@hades/bmkg-cli";
 
 const regions: Region[] = loadRegions(); // default pakai base.csv terbundle
@@ -55,12 +85,22 @@ if (adm4) {
     console.log(f.local_datetime, f.weather_desc, f.t, f.hu);
   });
 }
+
+const feed: AlertFeedItem[] = await fetchAlertFeed("id");
+const code = extractCodeFromLink(feed[0]?.link);
+if (code) {
+  const detail: AlertDetail = await fetchAlertDetail(code, "id");
+  console.log(detail.info.headline, detail.info.event);
+}
 ```
 
 Fungsi utama:
 - `loadRegions(path?)` memuat base.csv (kode wilayah adm1–adm4).
 - `searchRegions(regions, query, limit?)` mencari nama/kode, memprioritaskan Malang jika relevan.
 - `fetchForecast(adm4)` mengambil prakiraan 3 hari (3 jam sekali) dari BMKG.
+- `fetchAlertFeed(lang)` mengambil RSS peringatan dini (id/en).
+- `fetchAlertDetail(code, lang)` mengambil CAP detail per kode.
+- `extractCodeFromLink(link)` mengekstrak kode CAP dari link RSS.
 - `BASE_CSV_PATH` menunjuk file CSV terbundle (berguna saat dijalankan dari luar repo).
 
 ## Integrasi Frontend
@@ -81,3 +121,4 @@ Fungsi utama:
 - Cantumkan BMKG sebagai sumber data pada aplikasi Anda.
 - Hormati batas laju 60 permintaan per menit per IP.
 - Data wilayah berasal dari `base.csv` (kode wilayah administrasi tingkat IV, Kemendagri 100.1.1-6117/2022).
+- Peringatan dini (nowcast) menggunakan RSS + CAP dari bmkg.go.id/alerts/nowcast; valid CAP.

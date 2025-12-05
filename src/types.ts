@@ -20,3 +20,42 @@ export type ForecastResponse = {
     lokasi: Record<string, unknown>;
     forecasts: ForecastEntry[];
 };
+
+export type AlertFeedItem = {
+    title: string;
+    link: string;
+    description?: string;
+    author?: string;
+    pubDate?: string;
+    lastBuildDate?: string;
+};
+
+export type AlertDetail = {
+    identifier?: string;
+    sender?: string;
+    sent?: string;
+    status?: string;
+    msgType?: string;
+    scope?: string;
+    code?: string;
+    references?: string;
+    info: {
+        language?: string;
+        category?: string[];
+        event?: string;
+        urgency?: string;
+        severity?: string;
+        certainty?: string;
+        effective?: string;
+        expires?: string;
+        senderName?: string;
+        headline?: string;
+        description?: string;
+        web?: string;
+        area?: {
+            areaDesc?: string;
+            polygon?: string[];
+            geocode?: { valueName?: string; value?: string }[];
+        }[];
+    };
+};

@@ -40,5 +40,8 @@
     },
     "peerDependencies": {
         "typescript": "^5"
+    },
+    "dependencies": {
+        "fast-xml-parser": "^5.3.2"
     }
 }

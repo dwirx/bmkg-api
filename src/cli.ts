@@ -3,6 +3,13 @@ import { BASE_CSV_PATH, loadRegions } from "./data";
 import { fetchForecast, printForecast } from "./forecast";
 import { malangSnapshot } from "./malang";
 import { printRegions, searchRegions } from "./search";
+import {
+    fetchAlertDetail,
+    fetchAlertFeed,
+    printAlertDetail,
+    printAlertFeed,
+    extractCodeFromLink,
+} from "./alerts";
 
 const DEFAULT_QUERY = "malang";
 
@@ -36,6 +43,44 @@ async function main() {
         );
         printForecast(adm4, forecasts);
         console.log("Sumber data: BMKG (api.bmkg.go.id)");
+        return;
+    }
+
+    if (cmd === "alerts") {
+        const langArg = args[1] === "en" ? "en" : "id";
+        console.log(`Memuat RSS peringatan dini BMKG (${langArg})...`);
+        const items = await fetchAlertFeed(langArg);
+        printAlertFeed(items);
+        return;
+    }
+
+    if (cmd === "alert") {
+        const code = args[1];
+        const langArg = args[2] === "en" ? "en" : "id";
+        if (!code) {
+            console.error("Gunakan: bmkg alert <kode> [id|en]");
+            process.exit(1);
+        }
+        console.log(`Mengambil detail CAP ${code} (${langArg})...`);
+        const detail = await fetchAlertDetail(code, langArg);
+        printAlertDetail(detail);
+        console.log("Sumber data: BMKG (bmkg.go.id/alerts/nowcast)");
+        return;
+    }
+
+    if (cmd === "alerts-latest") {
+        // shortcut: show feed and auto-fetch first detail if available
+        const langArg = args[1] === "en" ? "en" : "id";
+        console.log(`Memuat RSS peringatan dini BMKG (${langArg})...`);
+        const items = await fetchAlertFeed(langArg);
+        printAlertFeed(items.slice(0, 5));
+        const code = extractCodeFromLink(items[0]?.link);
+        if (code) {
+            console.log(`\nDetail CAP pertama (${code}):`);
+            const detail = await fetchAlertDetail(code, langArg);
+            printAlertDetail(detail);
+        }
+        console.log("Sumber data: BMKG (bmkg.go.id/alerts/nowcast)");
         return;
     }
 
